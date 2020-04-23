@@ -14,8 +14,9 @@ public class ChickenMovement : MonoBehaviour
     private float vSpeed = 0;
 
     CharacterController controller;
-    private GameObject Legs;
-    private Animator LegsAni;
+    [SerializeField]
+    private GameObject Legs, LeftWing, RightWing;
+    private Animator LegsAni, WingRightAni, WingLeftAni;
 
     // Start is called before the first frame update
     void Start()
@@ -27,7 +28,23 @@ public class ChickenMovement : MonoBehaviour
             {
                 Legs = go.gameObject;
                 LegsAni = Legs.GetComponent<Animator>();
-                break;
+            }
+            if (go.name.ToLower() == "wings")
+            {
+                foreach (Transform t in go.GetComponentsInChildren<Transform>())
+                {
+                    print(go.GetComponentsInChildren<Transform>());
+                    if (t.name.ToLower() == "left")
+                    {
+                        LeftWing = t.gameObject;
+                        WingLeftAni = LeftWing.GetComponent<Animator>();
+                    }
+                    if (t.name.ToLower() == "right")
+                    {
+                        RightWing = t.gameObject;
+                        WingRightAni = RightWing.GetComponent<Animator>();
+                    }
+                }
             }
         }
     }
@@ -60,6 +77,9 @@ public class ChickenMovement : MonoBehaviour
             {
                 vSpeed = jumpSpeed;
             }
+
+            WingLeftAni.SetBool("IsGrounded", controller.isGrounded);
+            WingRightAni.SetBool("IsGrounded", controller.isGrounded);
         }
 
         vSpeed -= gravity * Time.deltaTime;
@@ -73,6 +93,9 @@ public class ChickenMovement : MonoBehaviour
         {
             LegsAni.SetBool("IsRunning", false);
         }
+
+        WingLeftAni.SetFloat("IsRunning", Input.GetAxisRaw("Vertical"));
+        WingRightAni.SetFloat("IsRunning", Input.GetAxisRaw("Vertical"));
     }    
 
     void Rotation()
